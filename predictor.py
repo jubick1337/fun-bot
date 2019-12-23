@@ -2,6 +2,8 @@ import keras.backend as K
 import numpy as np
 import tensorflow as tf
 import pickle
+from keras.models import Sequential
+from keras.layers import *
 from keras.models import load_model
 from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer
@@ -25,22 +27,34 @@ class Predictor:
         recall = self._recall_m(y_true, y_pred)
         return 2 * ((precision * recall) / (precision + recall + K.epsilon()))
 
-    def _create_model(self):
-        model = load_model('model.h5', custom_objects=
-        {'f1_m': self._f1_m})
+    def _create_model(self, length, vocab_size):
+        model = Sequential()
+        model.add(Embedding(vocab_size, 50, input_shape=(length,)))
+        model.add(Conv1D(filters=16, kernel_size=2, activation='relu'))
+        model.add(MaxPooling1D(pool_size=2))
+        model.add(Conv1D(filters=32, kernel_size=2, activation='relu'))
+        model.add(MaxPooling1D(pool_size=2))
+        model.add(Flatten())
+        model.add(Dense(32, activation='relu'))
+        model.add(Dense(1, activation='sigmoid'))
+        model.compile(loss='binary_crossentropy', optimizer='adadelta', metrics=['accuracy', self._f1_m])
         return model
 
-    def _encode_text(self, tokenizer, lines, length):
-        encoded = tokenizer.texts_to_sequences(lines)
-        padded = pad_sequences(encoded, maxlen=length, padding='post')
-        return padded
 
-    def predict(self, text):
-        encoded_text = self._encode_text(self.tokenizer, [text], 72)
-        p = self.model.predict(encoded_text)
-        return p
+def _encode_text(self, tokenizer, lines, length):
+    encoded = tokenizer.texts_to_sequences(lines)
+    padded = pad_sequences(encoded, maxlen=length, padding='post')
+    return padded
 
-    def __init__(self):
-        with open('tokenizer', 'rb') as f:
-            self.tokenizer = pickle.load(f)
-        self.model = self._create_model()
+
+def predict(self, text):
+    encoded_text = self._encode_text(self.tokenizer, [text], 72)
+    p = self.model.predict(encoded_text)
+    return p
+
+
+def __init__(self):
+    with open('tokenizer', 'rb') as f:
+        self.tokenizer = pickle.load(f)
+    self.model = self._create_model(72, 107695)
+    self.model.load_weights('model_weights.h5')
