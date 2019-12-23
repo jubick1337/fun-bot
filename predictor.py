@@ -41,6 +41,6 @@ class Predictor:
         return p
 
     def __init__(self):
-        with open('tokenzier', 'rb') as f:
+        with open('tokenizer', 'rb') as f:
             self.tokenizer = pickle.load(f)
         self.model = self._create_model()
