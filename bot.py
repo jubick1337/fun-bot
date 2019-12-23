@@ -9,12 +9,6 @@ server = Flask(__name__)
 model = Predictor()
 
 
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def predict_joke(message):
-    res = model.predict(message.text)
-    bot.send_message(message.chat.id, 'Мне было смешно на ' + str(res[0] * 100) + '%')
-
-
 @bot.message_handler(commands=['help'])
 def get_help(message):
     bot.send_message(message.chat.id, 'Попробуй меня рассмешить:)')
@@ -26,8 +20,9 @@ def start(message):
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
-def echo_message(message):
-    bot.reply_to(message, message.text)
+def predict_joke(message):
+    res = model.predict(message.text)
+    bot.send_message(message.chat.id, 'Мне было смешно на ' + str(res[0] * 100) + '%')
 
 
 @server.route('/' + TOKEN, methods=['POST'])
