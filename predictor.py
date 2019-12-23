@@ -40,21 +40,18 @@ class Predictor:
         model.compile(loss='binary_crossentropy', optimizer='adadelta', metrics=['accuracy', self._f1_m])
         return model
 
+    def _encode_text(self, tokenizer, lines, length):
+        encoded = tokenizer.texts_to_sequences(lines)
+        padded = pad_sequences(encoded, maxlen=length, padding='post')
+        return padded
 
-def _encode_text(self, tokenizer, lines, length):
-    encoded = tokenizer.texts_to_sequences(lines)
-    padded = pad_sequences(encoded, maxlen=length, padding='post')
-    return padded
+    def predict(self, text):
+        encoded_text = self._encode_text(self.tokenizer, [text], 72)
+        p = self.model.predict(encoded_text)
+        return p
 
-
-def predict(self, text):
-    encoded_text = self._encode_text(self.tokenizer, [text], 72)
-    p = self.model.predict(encoded_text)
-    return p
-
-
-def __init__(self):
-    with open('tokenizer', 'rb') as f:
-        self.tokenizer = pickle.load(f)
-    self.model = self._create_model(72, 107695)
-    self.model.load_weights('model_weights.h5')
+    def __init__(self):
+        with open('tokenizer', 'rb') as f:
+            self.tokenizer = pickle.load(f)
+        self.model = self._create_model(72, 107695)
+        self.model.load_weights('model_weights.h5')
