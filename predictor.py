@@ -23,7 +23,7 @@ class Predictor:
         return tokenizer
 
     def predict(self, text):
-        encoded_text = self._encode_text(self.tokenizer, text, 72)
+        encoded_text = self._encode_text(self.tokenizer, [text], 72)
         p = self.model.predict(encoded_text)
         return np.argmax(p)
 

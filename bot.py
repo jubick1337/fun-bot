@@ -11,8 +11,8 @@ model = Predictor()
 
 @bot.message_handler(content_types=['text'])
 def predict_joke(message):
-    res = 'смешно' if model.predict(message.text) == 1 else 'не смешно'
-    bot.send_message(message.chat.id, 'Мне было ' + str(res))
+    res = model.predict(message.text)
+    bot.send_message(message.chat.id, 'Мне было смешно на ' + str(res * 100) + '%')
 
 
 @bot.message_handler(commands=['help'])
