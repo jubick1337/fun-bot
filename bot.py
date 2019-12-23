@@ -1,4 +1,3 @@
-from emoji import emojize
 import os
 import telebot
 from predictor import Predictor
