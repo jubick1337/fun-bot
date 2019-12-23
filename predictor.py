@@ -54,4 +54,6 @@ class Predictor:
         with open('tokenizer', 'rb') as f:
             self.tokenizer = pickle.load(f)
         self.model = self._create_model(72, 107695)
+        self.model._make_predict_function()
+        graph = tf.get_default_graph()
         self.model.load_weights('model_weights.h5')
