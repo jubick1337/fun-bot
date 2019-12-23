@@ -1,13 +1,10 @@
+from tensorflow.python.keras.backend import set_session
 import keras.backend as K
-import numpy as np
 import tensorflow as tf
 import pickle
 from keras.models import Sequential
 from keras.layers import *
-from keras.models import load_model
 from keras.preprocessing.sequence import pad_sequences
-from keras.preprocessing.text import Tokenizer
-
 
 class Predictor:
     def _recall_m(self, y_true, y_pred):
@@ -46,14 +43,20 @@ class Predictor:
         return padded
 
     def predict(self, text):
+        K.clear_session()
+        global sess
+        global graph
         encoded_text = self._encode_text(self.tokenizer, [text], 72)
-        p = self.model.predict(encoded_text)
-        return p
+        with self.graph.as_default():
+            set_session(self.sess)
+            p = self.model.predict(encoded_text)
+            return p
 
     def __init__(self):
         with open('tokenizer', 'rb') as f:
             self.tokenizer = pickle.load(f)
+        self.sess = tf.Session()
+        self.graph = tf.get_default_graph()
+        set_session(self.sess)
         self.model = self._create_model(72, 107695)
-        self.model._make_predict_function()
-        graph = tf.get_default_graph()
         self.model.load_weights('model_weights.h5')
