@@ -12,7 +12,7 @@ model = Predictor()
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def predict_joke(message):
     res = model.predict(message.text)
-    bot.send_message(message.chat.id, 'Мне было смешно на ' + str(res * 100) + '%')
+    bot.send_message(message.chat.id, 'Мне было смешно на ' + str(res[0] * 100) + '%')
 
 
 @bot.message_handler(commands=['help'])
